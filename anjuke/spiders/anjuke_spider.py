@@ -75,10 +75,14 @@ class AnjukeSpider(CrawlSpider):
     for i in range(0,len(lis)):
       fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
     min_down_payment,house_type,opening_date,possession_date,sales_office_add=fields
-    #building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee
+    #building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
     lis=divs[2].xpath("./div/ul[@class='list']/li")
     fields=[]
     for i in range(0,len(lis)-1):
       fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
     building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee=fields
+    property_management=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+    #freeway_viaduct
+    freeway_viaduct=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
+    item=HouseItem()
     
