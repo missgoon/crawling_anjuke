@@ -48,41 +48,40 @@ class AnjukeSpider(CrawlSpider):
 
   def parse_house(self,response):
     sel=Selector(response=response)
+    item=HouseItem()
     divs=sel.xpath("//div[@class='can-container clearfix']")[0].xpath("./div[@class='can-left']")[0].xpath("./div[@class='can-item']")
     #楼盘名称  状态
     li_for_name_status=divs[0].xpath("./div/ul[@class='list']/li")[0]
-    name=li_for_name_status.xpath("./div[@class='des']/text()")[0].extract().strip()
-    status=li_for_name_status.xpath("./div[@class='des']/i[@class='can-tag-status lp-tag-status lp-tag-status-xian']/text()")[0].extract().strip()
+    item["name"]=li_for_name_status.xpath("./div[@class='des']/text()")[0].extract().strip()
+    item["status"]=li_for_name_status.xpath("./div[@class='des']/i[@class='can-tag-status lp-tag-status lp-tag-status-xian']/text()")[0].extract().strip()
     #price：住宅 3400 元/m²，由三部分组成
     li_for_price=divs[0].xpath("./div/ul[@class='list']/li")[1]
     price_part1=li_for_price.xpath("./div[@class='des']/text()")[0].extract().strip()  #
     price_part2=li_for_price.xpath("./div[@class='des']/span[@class='can-spe can-big space2']/text()")[0].extract().strip()
     price_part3="".join(li_for_price.xpath("./div[@class='des']").extract()).split("</span>")[-1].split("<a")[0].strip()
-    price=price_part1+" "+price_part2+" "+price_part3
+    item["price"]=price_part1+" "+price_part2+" "+price_part3
     #property_type
-    property_type=divs[0].xpath("./div/ul[@class='list']/li")[2].xpath("./div[@class='des']/text()")[0].extract().strip()
+    item["property_type"]=divs[0].xpath("./div/ul[@class='list']/li")[2].xpath("./div[@class='des']/text()")[0].extract().strip()
     #developer
-    developer=divs[0].xpath("./div/ul[@class='list']/li")[3].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+    item["developer"]=divs[0].xpath("./div/ul[@class='list']/li")[3].xpath("./div[@class='des']/a/text()")[0].extract().strip()
     #area_position
-    area_position="-".join(divs[0].xpath("./div/ul[@class='list']/li")[4].xpath("./div[@class='des']/a/text()").extract())
+    item["area_position"]="-".join(divs[0].xpath("./div/ul[@class='list']/li")[4].xpath("./div[@class='des']/a/text()").extract())
     #address
-    address=divs[0].xpath("./div/ul[@class='list']/li")[5].xpath("./div[@class='des']/text()")[0].extract().strip()
+    item["address"]=divs[0].xpath("./div/ul[@class='list']/li")[5].xpath("./div[@class='des']/text()")[0].extract().strip()
     #telephone
-    telephone=" ".join(divs[0].xpath("./div/ul[@class='list']/li")[6].xpath("./div[@class='des']")[0].xpath("./span").extract())
+    item["telephone"]=" ".join(divs[0].xpath("./div/ul[@class='list']/li")[6].xpath("./div[@class='des']")[0].xpath("./span").extract())
     #min_down_payment  house_type  opening_date  possession_date
     lis=divs[1].xpath("./div/ul[@class='list']/li")
     fields=[]
     for i in range(0,len(lis)):
       fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
-    min_down_payment,house_type,opening_date,possession_date,sales_office_add=fields
+    item["min_down_payment"],item["house_type"],item["opening_date"],item["possession_date"],item["sales_office_add"]=fields
     #building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
     lis=divs[2].xpath("./div/ul[@class='list']/li")
     fields=[]
     for i in range(0,len(lis)-1):
       fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
-    building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee=fields
-    property_management=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+    item["building_types"],item["year_of_property"],item["fitment"],item["plot_ratio"],item["greening_rate"],item["floor_condition"],item["works_programme"],item["managefee"]=fields
+    item["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
     #freeway_viaduct
-    freeway_viaduct=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
-    item=HouseItem()
-    
+    item["freeway_viaduct"]=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
