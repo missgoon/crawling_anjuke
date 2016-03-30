@@ -11,7 +11,7 @@ class AnjukePipeline(object):
     self.all_file=open("/root/anjuke/all.json","wb")
 
   def process_item(self, item, spider):
-  	line=json.dumps(dict(item))+"\n"
+    line=json.dumps(dict(item))+"\n"
     self.all_file.write(line)
     return item
 

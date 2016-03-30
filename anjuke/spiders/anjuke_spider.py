@@ -25,7 +25,7 @@ class AnjukeSpider(CrawlSpider):
     try:
       for dd in sel.xpath("//dd"):
         for city_url in dd.xpath("./a/@href").extract():
-          self.logger.info("parse_all_city:%s yield:%s",(response.url,city_url.strip()))
+          self.logger.info("parse_all_city: yield:%s",response.url+city_url.strip())
           yield scrapy.Request(city_url.strip(),self.parse_one_city)
     except Exception,e:
       self.logger.error(e)
@@ -35,9 +35,9 @@ class AnjukeSpider(CrawlSpider):
       sel=Selector(response=response)
       self.logger.info("parse_one_city:%s",response.url)
       for a in sel.xpath("//a[@class='a_navnew']"):
-        if unicode(a.xpath("./text()")[0].extract(),"utf-8")==unicode("新 房","utf-8"):
-          self.logger.info("parse_one_city:%s yield:%s",(response.url,a.xpath("./@href")[0].extract()))
-         	yield scrapy.Request(a.xpath("./@href")[0].extract(),self.parse_city)
+        if a.xpath("./text()")[0].extract().strip()==unicode("新 房","utf-8"):
+          self.logger.info("parse_one_city: yield:%s",response.url+a.xpath("./@href")[0].extract())
+          yield scrapy.Request(a.xpath("./@href")[0].extract(),self.parse_city)
     except Exception,e:
       self.logger.error(e)
 
@@ -52,7 +52,7 @@ class AnjukeSpider(CrawlSpider):
         url_list=str(url).split(s)
         url_list[1]=url_list[1].split(".html")[0]
         real_url=url_list[0]+s+"canshu-"+url_list[1]+".html?from=loupan_tab"
-        self.logger.info("parse_city:%s yield:%s",(response.url,real_url))
+        self.logger.info("parse_city: yield:%s",response.url+real_url)
         yield scrapy.Request(real_url,self.parse_house)
     except Exception,e:
       self.logger.error(e)

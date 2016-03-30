@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class AnjukeHttpProxyMiddleware(object):
   def process_request(self,request,spider):
-    proxy_str="http://27.115.75.114:8080"
+    proxy_str="http://182.90.92.119:80"
     if len(proxy_str)!=0:
       try:
         request.meta["proxy"]=proxy_str
@@ -10,7 +10,7 @@ class AnjukeHttpProxyMiddleware(object):
         print("proxy is error................................")
 
 class AnjukeUserAgentMiddleware(object):
-	'''
+  '''
     change request header nealy every time
   '''
   def process_request(self,request,spider):
