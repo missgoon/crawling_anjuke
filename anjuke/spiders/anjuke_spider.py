@@ -72,17 +72,13 @@ class AnjukeSpider(CrawlSpider):
     #min_down_payment  house_type  opening_date  possession_date
     lis=divs[1].xpath("./div/ul[@class='list']/li")
     fields=[]
-    for i in range(0,len(lis)-1):
+    for i in range(0,len(lis)):
       fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
-    building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee=fields
-    min_down_payment=lis[0].xpath("./div[@class='des']/text()")[0].extract().strip()
-    house_type=lis[1].xpath("./div[@class='des']/text()")[0].extract().strip()
-    opening_date=lis[2].xpath("./div[@class='des']/text()")[0].extract().strip()
-    possession_date=lis[3].xpath("./div[@class='des']/text()")[0].extract().strip()
-    sales_office_add=lis[4].xpath("./div[@class='des']/text()")[0].extract().strip()
-    #building_types
+    min_down_payment,house_type,opening_date,possession_date,sales_office_add=fields
+    #building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee
     lis=divs[2].xpath("./div/ul[@class='list']/li")
     fields=[]
     for i in range(0,len(lis)-1):
       fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
     building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee=fields
+    
