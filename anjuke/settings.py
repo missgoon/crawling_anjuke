@@ -49,9 +49,11 @@ NEWSPIDER_MODULE = 'anjuke.spiders'
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'anjuke.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+  "anjuke.middlewares.AnjukeHttpProxyMiddleware": 500,
+  "anjuke.middlewares.AnjukeUserAgentMiddleware": 501,
+    # 'anjuke.middlewares.MyCustomDownloaderMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -61,9 +63,10 @@ NEWSPIDER_MODULE = 'anjuke.spiders'
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'anjuke.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+  'anjuke.pipelines.AnjukePipeline': 300,
+    # 'anjuke.pipelines.SomePipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
