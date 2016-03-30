@@ -85,3 +85,4 @@ class AnjukeSpider(CrawlSpider):
     item["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
     #freeway_viaduct
     item["freeway_viaduct"]=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
+    return item
