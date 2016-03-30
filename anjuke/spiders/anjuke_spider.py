@@ -63,10 +63,26 @@ class AnjukeSpider(CrawlSpider):
     property_type=divs[0].xpath("./div/ul[@class='list']/li")[2].xpath("./div[@class='des']/text()")[0].extract().strip()
     #developer
     developer=divs[0].xpath("./div/ul[@class='list']/li")[3].xpath("./div[@class='des']/a/text()")[0].extract().strip()
-    
-
-
-
-
-
-
+    #area_position
+    area_position="-".join(divs[0].xpath("./div/ul[@class='list']/li")[4].xpath("./div[@class='des']/a/text()").extract())
+    #address
+    address=divs[0].xpath("./div/ul[@class='list']/li")[5].xpath("./div[@class='des']/text()")[0].extract().strip()
+    #telephone
+    telephone=" ".join(divs[0].xpath("./div/ul[@class='list']/li")[6].xpath("./div[@class='des']")[0].xpath("./span").extract())
+    #min_down_payment  house_type  opening_date  possession_date
+    lis=divs[1].xpath("./div/ul[@class='list']/li")
+    fields=[]
+    for i in range(0,len(lis)-1):
+      fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
+    building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee=fields
+    min_down_payment=lis[0].xpath("./div[@class='des']/text()")[0].extract().strip()
+    house_type=lis[1].xpath("./div[@class='des']/text()")[0].extract().strip()
+    opening_date=lis[2].xpath("./div[@class='des']/text()")[0].extract().strip()
+    possession_date=lis[3].xpath("./div[@class='des']/text()")[0].extract().strip()
+    sales_office_add=lis[4].xpath("./div[@class='des']/text()")[0].extract().strip()
+    #building_types
+    lis=divs[2].xpath("./div/ul[@class='list']/li")
+    fields=[]
+    for i in range(0,len(lis)-1):
+      fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
+    building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee=fields

@@ -24,7 +24,6 @@ class HouseItem(Item):
   area_position=Field()  #区域位置
   address=Field()  #楼盘地址
   telephone=Field()  #售楼处电话
-  sales_info=Field()  #销售信息
   min_down_payment=Field()  #最低首付
   house_type=Field()  #楼盘户型
   opening_date=Field()  #开盘时间
@@ -40,4 +39,4 @@ class HouseItem(Item):
   managefee=Field()  #物业管理费
   property_management=Field()  #物业管理公司
   freeway_viaduct=Field()  #高速/高架
-  
+
