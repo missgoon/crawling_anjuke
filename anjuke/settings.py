@@ -50,9 +50,9 @@ DOWNLOAD_DELAY=3
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+#    'anjuke.middlewares.MyCustomDownloaderMiddleware': 543,
   "anjuke.middlewares.AnjukeHttpProxyMiddleware": 500,
   "anjuke.middlewares.AnjukeUserAgentMiddleware": 501,
-    # 'anjuke.middlewares.MyCustomDownloaderMiddleware': 543,
 }
 
 # Enable or disable extensions
@@ -64,8 +64,8 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+#    'anjuke.pipelines.SomePipeline': 300,
   'anjuke.pipelines.AnjukePipeline': 300,
-    # 'anjuke.pipelines.SomePipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -90,8 +90,4 @@ ITEM_PIPELINES = {
 import logging
 from scrapy.utils.log import configure_logging
 configure_logging(install_root_handler=False)
-logging.basicConfig(
-    filename='log.txt',
-    format='%(levelname)s: %(message)s',
-    level=logging.INFO
-)
+logging.basicConfig(filename='log.txt',format='%(levelname)s: %(message)s',level=logging.INFO)
