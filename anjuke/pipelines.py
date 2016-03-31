@@ -8,10 +8,10 @@ import json
 
 class AnjukePipeline(object):
   def __init__(self):
-    print("#############")
-    print("#############")
-    print("#############")
-    print("#############")
+    # print("#############")
+    # print("#############")
+    # print("#############")
+    # print("#############")
     self.all_file=open("/root/anjuke/all.json","wb")
 
   def process_item(self, item, spider):
