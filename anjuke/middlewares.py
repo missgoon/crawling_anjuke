@@ -2,6 +2,7 @@
 import redis
 import requests
 import logging
+import re
 
 class AnjukeHttpProxyMiddleware(object):
   def __init__(self):
@@ -32,3 +33,12 @@ class AnjukeUserAgentMiddleware(object):
   def process_request(self,request,spider):
     agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"
     request.headers["User-Agent"]=agent
+
+class AnjukeFilterVerificationCodeMiddleware(object):
+  '''
+    去掉能匹配到'captcha-verify'的需要输入验证码的页面
+  '''
+  def process_request(self,request,spider):
+    if re.search("captcha-verify",request.url)!=None: raise
+    logging.info("the url need not verification code.")
+    return None

@@ -43,9 +43,10 @@ DOWNLOAD_DELAY=3
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
+SPIDER_MIDDLEWARES = {
 #    'anjuke.middlewares.MyCustomSpiderMiddleware': 543,
-#}
+  "anjuke.middlewares.AnjukeFilterVerificationCodeMiddleware": 543,
+}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
