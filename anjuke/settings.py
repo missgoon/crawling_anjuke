@@ -67,6 +67,7 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
 #    'anjuke.pipelines.SomePipeline': 300,
   'anjuke.pipelines.AnjukePipeline': 300,
+  "anjuke.pipelines.AnjukeCityItemPipeline": 301,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

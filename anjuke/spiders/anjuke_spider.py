@@ -24,7 +24,7 @@ class AnjukeSpider(CrawlSpider):
     for dd in sel.xpath("//dd"):
       for a in dd.xpath("./a").extract():
         item=CityItem(db_type="cities")
-        item["name"]=a.xpath("./text()")[0].extract().strip()
+        item["name"]=[a.xpath("./text()")[0].extract().strip()]
         item["url"]=a.xpath("./@href")[0].extract().strip()
         self.logger.info("######parse: yield:%s",response.url+item["url"])
         yield item
