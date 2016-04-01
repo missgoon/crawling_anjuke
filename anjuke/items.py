@@ -18,4 +18,5 @@ class CityItem(Item):
   name=Field()  #城市名
   url=Field()  #关联的地址
   db_type=Field()  #数据库集合名
+  house_amount=Field()  #该城市楼盘数
   

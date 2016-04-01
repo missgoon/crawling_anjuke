@@ -6,7 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 from pymongo import MongoClient
-import datetime
+import datetime.datetime as DateTime 
 
 class AnjukePipeline(object):
   def __init__(self):
@@ -33,5 +33,11 @@ class AnjukeCityPipeline(object):
 
   def process_item(self,item,spider):
     if item.get("db_type","false")=="cities":
-      self.cities.insert_one(dict(item).update({"date":datetime.datetime.utcnow()}))
-      return item
+      db_item=self.cities.find({"name":item["name"]})
+      if db_item.count()==0:
+        self.cities.insert_one(dict(item).update({"date":DateTime.utcnow()}))
+        return item
+      else:
+        db_item=db_item[0]
+        update_item={}
+        if item.get("url",None):update_item.update({"url":item["url"]})
