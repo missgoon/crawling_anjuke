@@ -17,16 +17,18 @@ class AnjukeSpider(CrawlSpider):
     Rule(LinkExtractor(allow=(".fang.anjuke.com/?from=AF_Home_switchcity")),callback="parse_city"),
 
   )
-
-  handle_httpstatus_list=[301]
-
+  
   def parse(self,response):
     self.logger.info("######parse:%s",response.url)
     sel=Selector(response=response)
     for dd in sel.xpath("//dd"):
-      for city_url in dd.xpath("./a/@href").extract():
-        self.logger.info("######parse: yield:%s",response.url+city_url.strip())
-        yield scrapy.Request(city_url.strip(),self.parse_one_city)
+      for a in dd.xpath("./a").extract():
+        item=CityItem(db_type="cities")
+        item["name"]=a.xpath("./text()")[0].extract().strip()
+        item["url"]=a.xpath("./@href")[0].extract().strip()
+        self.logger.info("######parse: yield:%s",response.url+item["url"])
+        yield item
+        yield scrapy.Request(item["url"],self.parse_one_city,meta={"item":item})
 
   def parse_one_city(self,response):
     try:

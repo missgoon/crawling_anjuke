@@ -5,10 +5,17 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
-import scrapy
+#import scrapy
+#
+#
+#class TuicoolMagsItem(scrapy.Item):
+#    # define the fields for your item here like:
+#    # name = scrapy.Field()
+#    pass
+from scrapy.item import Item,Field
 
-
-class AnjukeItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class CityItem(Item):
+  name=Field()  #城市名
+  url=Field()  #关联的地址
+  db_type=Field()  #数据库集合名
+  

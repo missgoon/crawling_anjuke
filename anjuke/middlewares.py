@@ -40,5 +40,5 @@ class AnjukeFilterVerificationCodeMiddleware(object):
   '''
   def process_request(self,request,spider):
     if re.search("captcha-verify",request.url)!=None: raise
-    logging.info("the url need not verification code.")
+    logging.info("######the url need not verification code.")
     return None
