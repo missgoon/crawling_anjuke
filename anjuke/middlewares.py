@@ -16,10 +16,12 @@ class AnjukeHttpProxyMiddleware(object):
       logging.info("######try:%s","http://"+proxy_str)
       try:
         response=requests.get("http://chaoyang.anjuke.com/",proxies=proxies)
-        if response.status_code!=200: raise
+        self.r.incr("ip_proxies.times")
+        if response.status_code!=200 or int(self.r.get("ip_proxies.times"))>10: raise
         self.r.lpush("ip_proxies",proxy_str)
         flag=False
       except Exception,e:
+        self.r.set("ip_proxies.times",0)
         print("failed:%s","http://"+proxy_str)
         print(e)
         self.r.rpush("ip_proxies",proxy_str)

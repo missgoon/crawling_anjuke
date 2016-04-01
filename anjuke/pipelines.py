@@ -12,10 +12,6 @@ import re
 
 class AnjukePipeline(object):
   def __init__(self):
-    # print("#############")
-    # print("#############")
-    # print("#############")
-    # print("#############")
     self.all_file=open("/root/anjuke/all.json","wb")
 
   def process_item(self, item, spider):
@@ -37,14 +33,13 @@ class AnjukeCityItemPipeline(object):
     if item.get("db_type","false")=="cities":
       db_item=self.cities.find({"url":item["url"]})
       if db_item.count()==0:
-        logging.info("#####")
         item["date"]=DateTime.utcnow()
-        print(dict(item))
         self.cities.insert_one(dict(item))
-        return item
       else:
         db_item=db_item[0]
         update_item={}
         if item.get("name",None): 
           self.cities.update({"url":item["url"]},{"$set":{"name":list(set(db_item["name"]+item["name"]))}})
+        if item.get("new_house_url",None):
+          self.cities.update({"url":item["url"]},{"$set":{"new_house_url":item["new_house_url"]}})
     return item

@@ -28,18 +28,21 @@ class AnjukeSpider(CrawlSpider):
         item["url"]=a.xpath("./@href")[0].extract().strip()
         self.logger.info("######parse: yield:%s",response.url+item["url"])
         yield item
-  #       yield scrapy.Request(item["url"],self.parse_one_city,meta={"item":item})
+        yield scrapy.Request(item["url"],self.parse_one_city,meta={"city_item":item})
 
-  # def parse_one_city(self,response):
-  #   try:
-  #     sel=Selector(response=response)
-  #     self.logger.info("######parse_one_city:%s",response.url)
-  #     for a in sel.xpath("//a[@class='a_navnew']"):
-  #       if a.xpath("./text()")[0].extract().strip()==unicode("新 房","utf-8"):
-  #         self.logger.info("######parse_one_city: yield:%s",response.url+a.xpath("./@href")[0].extract())
-  #         yield scrapy.Request(a.xpath("./@href")[0].extract(),self.parse_city)
-  #   except Exception,e:
-  #     self.logger.error(e)
+  def parse_one_city(self,response):
+    try:
+      sel=Selector(response=response)
+      self.logger.info("######parse_one_city:%s",response.url)
+      city_item=response.meta["city_item"]
+      for a in sel.xpath("//a[@class='a_navnew']"):
+        if a.xpath("./text()")[0].extract().strip()==unicode("新 房","utf-8"):
+          self.logger.info("######parse_one_city: yield:%s",response.url+a.xpath("./@href")[0].extract())
+          city_item["new_house_url"]=a.xpath("./@href")[0].extract()
+          yield city_item
+          # yield scrapy.Request(city_item["new_house_url"],self.parse_city)
+    except Exception,e:
+      self.logger.error(e)
 
   # def parse_city(self,response):
   #   sel=Selector(response=response)
