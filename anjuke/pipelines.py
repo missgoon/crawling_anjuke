@@ -43,3 +43,17 @@ class AnjukeCityItemPipeline(object):
         if item.get("new_house_url",None):
           self.cities.update({"url":item["url"]},{"$set":{"new_house_url":item["new_house_url"]}})
     return item
+
+class AnjukeHouseItemPipeline(object):
+  def __init__(self):
+    client=MongoClient("139.129.45.40",27017)
+    db=client.anjuke
+    self.houses=db.houses
+
+  def process_item(self,item,spider):
+    if item.get("db_type","false")=="houses":
+      db_item=self.houses.find({"db_id":item["db_id"]})
+      if db_item.count()==0:
+        item["date"]=DateTime.utcnow()
+        self.houses.insert_one(dict(item))
+    return item

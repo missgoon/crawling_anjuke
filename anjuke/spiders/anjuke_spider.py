@@ -55,7 +55,17 @@ class AnjukeSpider(CrawlSpider):
         url_list[1]=url_list[1].split(".html")[0]
         real_url=url_list[0]+s+"canshu-"+url_list[1]+".html?from=loupan_tab"
         self.logger.info("######parse_city: yield:%s",response.url+real_url)
+        house_item=HouseItem(db_type="houses")
+        house_item["db_id"]=url_list[1]
+        yield house_item
         # yield scrapy.Request(real_url,self.parse_house)
+      try:
+        next_link=sel.xpath("//div[@class='pagination']")[0].xpath("./a[@class='next-page next-link']/@href")[0].extract().strip()
+        if not len(next_link)>0: raise
+        return scrapy.Request(next_link,self.parse_city)
+      except:
+        self.logger.info("######"+response.url+"city crawling finished...")
+        pass
     except Exception,e:
       self.logger.error(e)
 
