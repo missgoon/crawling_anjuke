@@ -15,7 +15,6 @@ class AnjukeSpider(CrawlSpider):
   rules=(
     Rule(LinkExtractor(allow=("http://www.anjuke.com/sy-city.html",)),callback="parse_all_city",follow=True),
     Rule(LinkExtractor(allow=(".fang.anjuke.com/?from=AF_Home_switchcity")),callback="parse_city"),
-
   )
   
   def parse(self,response):
@@ -40,25 +39,25 @@ class AnjukeSpider(CrawlSpider):
           self.logger.info("######parse_one_city: yield:%s",response.url+a.xpath("./@href")[0].extract())
           city_item["new_house_url"]=a.xpath("./@href")[0].extract()
           yield city_item
-          # yield scrapy.Request(city_item["new_house_url"],self.parse_city)
+          yield scrapy.Request(city_item["new_house_url"],self.parse_city)
     except Exception,e:
       self.logger.error(e)
 
-  # def parse_city(self,response):
-  #   sel=Selector(response=response)
-  #   self.logger.info("######parse_city:%s",response.url)
-  #   try:
-  #     key_list_div=sel.xpath("//div[@class='key-list']")[0]
-  #     for div in key_list_div.xpath("./div"):
-  #       url=div.xpath("./@data-link")[0].extract().strip()
-  #       s=".fang.anjuke.com/loupan/"
-  #       url_list=str(url).split(s)
-  #       url_list[1]=url_list[1].split(".html")[0]
-  #       real_url=url_list[0]+s+"canshu-"+url_list[1]+".html?from=loupan_tab"
-  #       self.logger.info("######parse_city: yield:%s",response.url+real_url)
-  #       yield scrapy.Request(real_url,self.parse_house)
-  #   except Exception,e:
-  #     self.logger.error(e)
+  def parse_city(self,response):
+    sel=Selector(response=response)
+    self.logger.info("######parse_city:%s",response.url)
+    try:
+      key_list_div=sel.xpath("//div[@class='key-list']")[0]
+      for div in key_list_div.xpath("./div"):
+        url=div.xpath("./@data-link")[0].extract().strip()
+        s=".fang.anjuke.com/loupan/"
+        url_list=str(url).split(s)
+        url_list[1]=url_list[1].split(".html")[0]
+        real_url=url_list[0]+s+"canshu-"+url_list[1]+".html?from=loupan_tab"
+        self.logger.info("######parse_city: yield:%s",response.url+real_url)
+        # yield scrapy.Request(real_url,self.parse_house)
+    except Exception,e:
+      self.logger.error(e)
 
   # def parse_house(self,response):
   #   self.logger.info("######parse_house:%s successfully!!!",response.url)
