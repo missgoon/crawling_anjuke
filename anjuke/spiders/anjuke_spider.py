@@ -62,6 +62,7 @@ class AnjukeSpider(CrawlSpider):
       try:
         next_link=sel.xpath("//div[@class='pagination']")[0].xpath("./a[@class='next-page next-link']/@href")[0].extract().strip()
         if not len(next_link)>0: raise
+        self.logger.info("######from %s get next link %s"%(response.url,next_link))
         yield scrapy.Request(next_link,self.parse_city)
       except:
         self.logger.info("######"+response.url+"city crawling finished...")

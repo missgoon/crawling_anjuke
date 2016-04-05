@@ -12,12 +12,13 @@ class AnjukeHttpProxyMiddleware(object):
     flag=True
     while flag:
       proxy_str=self.r.lpop("ip_proxies")
-      proxies = {'http':"http://"+proxy_str,}
+      # proxies = {'http':"http://"+proxy_str,}
       logging.info("######try:%s","http://"+proxy_str)
       try:
-        response=requests.get("http://chaoyang.anjuke.com/",proxies=proxies)
+        # response=requests.get("http://chaoyang.anjuke.com/",proxies=proxies)
         self.r.incr("ip_proxies.times")
-        if response.status_code!=200 or int(self.r.get("ip_proxies.times"))>10: raise
+        if int(self.r.get("ip_proxies.times"))>10: raise
+        # if response.status_code!=200 or int(self.r.get("ip_proxies.times"))>10: raise
         self.r.lpush("ip_proxies",proxy_str)
         flag=False
       except Exception,e:

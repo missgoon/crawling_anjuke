@@ -23,6 +23,7 @@ class CityItem(Item):
   new_house_url=Field()  #页面新房的地址
 
 class HouseItem(Item):
+  db_type=Field()  
   db_id=Field()  #anjuke数据库id
   date=Field()  
   name=Field()  #楼盘名称

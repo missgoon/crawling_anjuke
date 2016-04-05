@@ -51,7 +51,7 @@ class AnjukeHouseItemPipeline(object):
     self.houses=db.houses
 
   def process_item(self,item,spider):
-    if item.get("db_type","false")=="houses":
+    if item.get("db_type","false")=="houses" and len(item.get("db_id",""))!=0:
       db_item=self.houses.find({"db_id":item["db_id"]})
       if db_item.count()==0:
         item["date"]=DateTime.utcnow()
