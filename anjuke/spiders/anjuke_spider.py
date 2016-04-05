@@ -58,7 +58,7 @@ class AnjukeSpider(CrawlSpider):
         house_item=HouseItem(db_type="houses")
         house_item["db_id"]=url_list[1]
         yield house_item
-        # yield scrapy.Request(real_url,self.parse_house)
+        yield scrapy.Request(real_url,self.parse_house)
       try:
         next_link=sel.xpath("//div[@class='pagination']")[0].xpath("./a[@class='next-page next-link']/@href")[0].extract().strip()
         if not len(next_link)>0: raise
@@ -70,5 +70,47 @@ class AnjukeSpider(CrawlSpider):
     except Exception,e:
       self.logger.error(e)
 
-  # def parse_house(self,response):
-  #   self.logger.info("######parse_house:%s successfully!!!",response.url)
+  def parse_house(self,response):
+    sel=Selector(response=response)
+    self.logger.info("parse_house:%s",response.url)
+    item=HouseItem()
+    try:
+      divs=sel.xpath("//div[@class='can-container clearfix']")[0].xpath("./div[@class='can-left']")[0].xpath("./div[@class='can-item']")
+      #楼盘名称  状态
+      li_for_name_status=divs[0].xpath("./div/ul[@class='list']/li")[0]
+      item["name"]=li_for_name_status.xpath("./div[@class='des']/text()")[0].extract().strip()
+      item["status"]=li_for_name_status.xpath("./div[@class='des']/i/text()")[0].extract().strip()
+      #price：住宅 3400 元/m²，由三部分组成
+      li_for_price=divs[0].xpath("./div/ul[@class='list']/li")[1]
+      price_part1=li_for_price.xpath("./div[@class='des']/text()")[0].extract().strip()
+      price_part2=li_for_price.xpath("./div[@class='des']/span[@class='can-spe can-big space2']/text()")[0].extract().strip()
+      price_part3="".join(li_for_price.xpath("./div[@class='des']").extract()).split("</span>")[-1].split("<a")[0].strip()
+      item["price"]=price_part1+" "+price_part2+" "+price_part3
+      #property_type
+      item["property_type"]=divs[0].xpath("./div/ul[@class='list']/li")[2].xpath("./div[@class='des']/text()")[0].extract().strip()
+      #developer
+      item["developer"]=divs[0].xpath("./div/ul[@class='list']/li")[3].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+      #area_position
+      item["area_position"]="-".join(divs[0].xpath("./div/ul[@class='list']/li")[4].xpath("./div[@class='des']/a/text()").extract())
+      #address
+      item["address"]=divs[0].xpath("./div/ul[@class='list']/li")[5].xpath("./div[@class='des']/text()")[0].extract().strip()
+      #telephone
+      item["telephone"]=" ".join(divs[0].xpath("./div/ul[@class='list']/li")[6].xpath("./div[@class='des']")[0].xpath("./span").extract())
+      #min_down_payment  house_type  opening_date  possession_date
+      lis=divs[1].xpath("./div/ul[@class='list']/li")
+      fields=[]
+      for i in range(0,len(lis)):
+        fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
+      item["min_down_payment"],item["house_type"],item["opening_date"],item["possession_date"],item["sales_office_add"]=fields
+      #building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
+      lis=divs[2].xpath("./div/ul[@class='list']/li")
+      fields=[]
+      for i in range(0,len(lis)-1):
+        fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
+      item["building_types"],item["year_of_property"],item["fitment"],item["plot_ratio"],item["greening_rate"],item["floor_condition"],item["works_programme"],item["managefee"]=fields
+      item["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+      #freeway_viaduct
+      item["freeway_viaduct"]=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
+      return item
+    except Exception,e:
+      self.logger.error(e)
