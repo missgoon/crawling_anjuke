@@ -70,17 +70,22 @@ class AnjukeSpider(CrawlSpider):
     except Exception,e:
       self.logger.error(e)
 
-  def fun1(div):
+  def fun1(self,div):
     """抓取house信息"""
     result=HouseItem()
-    li_list={u"楼盘名称":fun5,u"参考单价":fun6,u"物业类型":fun7,u"开发商":fun8,u"区域位置":fun9,u"楼盘地址":fun10,u"售楼处电话":fun11}
+    self.logger.info("######fun1.........")
+    li_list={u"楼盘名称":self.fun5,u"参考单价":self.fun6,u"物业类型":self.fun7,u"开发商":self.fun8,u"区域位置":self.fun9,u"楼盘地址":self.fun10,u"售楼处电话":self.fun11}
     for li in div.xpath("./div[@class='can-border']/ul[@class='list']/li"):
-      item_hash=li_list.get(li.xpath("./div[@class='name']/text()")[0].extract().strip(),"null")(li)
-      if item_hash!="null": result.update(item_hash)
+      try:
+        item_hash=li_list.get(li.xpath("./div[@class='name']/text()")[0].extract().strip(),"null")(li)
+        if item_hash!="null": result.update(item_hash)
+      except:
+        pass
     return result 
 
-  def fun5(li):
+  def fun5(self,li):
     """抓取名称，状态"""
+    self.logger.info("######fun5.........")
     try:
       name=li.xpath("./div[@class='des']/text()")[0].extract().strip()
     except:
@@ -91,16 +96,18 @@ class AnjukeSpider(CrawlSpider):
       status="null"
     return {"name":name,"status":status}
 
-  def fun6(li):
+  def fun6(self,li):
     """抓取参考单价"""
+    self.logger.info("######fun6.........")
     try:
       price=li.xpath("./div[@class='des']/text()")[0].extract().strip()+"-"+li.xpath("./div[@class='des']/span/text()")[0].extract().strip()+"-"+li.xpath("./div[@class='des']/text()")[1].extract().strip()
     except:
       price="null"
     return {"price":price}
 
-  def fun7(li):
+  def fun7(self,li):
     """抓取物业类型"""
+    self.logger.info("######fun7.........")
     try:
       for text in li.xpath("./div[@class='des']/text()"):
         property_type+=" "+text.extract().strip()
@@ -108,16 +115,18 @@ class AnjukeSpider(CrawlSpider):
       property_type="null"
     return {"property_type":property_type.strip()}
 
-  def fun8(li):
+  def fun8(self,li):
     """抓取开发商"""
+    self.logger.info("######fun8.........")
     try:
       developer=li.xpath("./div[@class='des']/a/text()")[0].extract().strip()
     except:
       developer="null"
     return {"developer":developer}
 
-  def fun9(li):
+  def fun9(self,li):
     """抓取区域位置"""
+    self.logger.info("######fun9.........")
     try:
       area_position=""
       for a in li.xpath("./div[@class='des']/a"):
@@ -126,16 +135,18 @@ class AnjukeSpider(CrawlSpider):
       area_position="null"
     return {"area_position":area_position.strip()}
 
-  def fun10(li):
+  def fun10(self,li):
     """抓取楼盘地址"""
+    self.logger.info("######fun10.........")
     try:
       address=li.xpath("./div[@class='des']/text()")[0].extract().strip()
     except:
       address="null"
     return {"address":address}
 
-  def fun11(li):
+  def fun11(self,li):
     """抓取售楼处电话"""
+    self.logger.info("######fun11.........")
     try:
       telephone=""
       for span in li.xpath("./div[@class='des']/span"):
@@ -144,25 +155,39 @@ class AnjukeSpider(CrawlSpider):
       telephone="null"
     return {"telephone":telephone.strip()}
 
-  def fun2(div):
+  def fun2(self,div):
+    self.logger.info("######fun2.........")
     lis=div.xpath("./div/ul[@class='list']/li")
+    self.logger.info("######2fun2.........")
     result,names=HouseItem(),["min_down_payment","house_type","opening_date","possession_date","sales_office_add","building_types","year_of_property","fitment","plot_ratio","greening_rate","floor_condition","works_programme","managefee"]
     for i in range(0,len(lis)):
       try:
+        self.logger.info("######23fun2.........")
         name=lis[i].xpath("./div[@class='name']/text()")[0].extract().strip()
         if names.count(name)!=0: 
           try:
+            self.logger.info("######24fun2.........")
             rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
+            self.logger.info("######25fun2.........")
           except:
+            self.logger.info("######26fun2.........")
             rst="null"
+          self.logger.info("######27fun2.........")
           result[name.encode("utf-8")]=rst
+          self.logger.info("######28fun2.........")
         elif name==u"物业管理费":
+          self.logger.info("######29fun2.........")
+          print("######........")
+          print(lis[8].xpath("./div[@class='des']/a/text()"))
+          print(lis[8].xpath("./div[@class='des']/a/text()")[0].extract())
           result["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+          self.logger.info("######210fun2.........")
       except:
+        self.logger.info("######211fun2.........")
         pass
     return result
 
-  def fun3(div):
+  def fun3(self,div):
     result=HouseItem()
     result["freeway_viaduct"]=div.xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
     return result
@@ -171,7 +196,7 @@ class AnjukeSpider(CrawlSpider):
     sel=Selector(response=response)
     self.logger.info("parse_house:%s",response.url)
     item=HouseItem(db_type="houses",db_id=response.url.split("canshu-")[1].split(".html")[0])
-    can_head={u"基本信息":fun1,u"销售信息":fun2,u"小区情况":fun2,u"交通配套":fun3}
+    can_head={u"基本信息":self.fun1,u"销售信息":self.fun2,u"小区情况":self.fun2,u"交通配套":self.fun3}
     try:
       for div in sel.xpath("//div[@class='can-left']/div[@class='can-item']"):
         rst=can_head.get(div.xpath("./div[@class='can-head']/h4/text()")[0].extract().strip(),"null")(div)
