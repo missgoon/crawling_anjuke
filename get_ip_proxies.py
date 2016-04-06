@@ -5,9 +5,9 @@ import redis
 import multiprocessing  #多进程module
 
 urls=[
-  "http://www.youdaili.net/Daili/http/4309.html",
-  "http://www.youdaili.net/Daili/http/4309_2.html",
-  "http://www.youdaili.net/Daili/http/4309_3.html",
+  "http://www.youdaili.net/Daili/http/4313.html",
+  "http://www.youdaili.net/Daili/http/4313_2.html",
+  # "http://www.youdaili.net/Daili/http/4309_3.html",
 ]
 test_url="http://chaoyang.anjuke.com/"
 
@@ -15,7 +15,8 @@ r = redis.Redis(host="139.129.45.40",port=6379,db=0)
 r.flushall()
 def handle_item(item):
   try:
-    item=item.strip().split("@")[0]
+    if item.strip().count("@")!=0: item=item.strip().split("@")[0]
+    elif item.strip().count("#")!=0: item=item.strip().split("#")[0]
     if not len(item)>0: raise
     proxies = {'http':"http://"+item}
     response=requests.get(test_url,proxies=proxies,timeout=3)
