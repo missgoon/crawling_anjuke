@@ -49,4 +49,3 @@ class HouseItem(Item):
   managefee=Field()  #物业管理费
   property_management=Field()  #物业管理公司
   freeway_viaduct=Field()  #高速/高架
-  

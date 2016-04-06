@@ -70,47 +70,168 @@ class AnjukeSpider(CrawlSpider):
     except Exception,e:
       self.logger.error(e)
 
+  def fun1(div):
+    """抓取house信息"""
+    result=HouseItem()
+    li_list={u"楼盘名称":fun5,u"参考单价":fun6,u"物业类型":fun7,u"开发商":fun8,u"区域位置":fun9,u"楼盘地址":fun10,u"售楼处电话":fun11}
+    for li in div.xpath("./div[@class='can-border']/ul[@class='list']/li"):
+      item_hash=li_list.get(li.xpath("./div[@class='name']/text()")[0].extract().strip(),"null")(li)
+      if item_hash!="null": result.update(item_hash)
+    return result 
+
+  def fun5(li):
+    """抓取名称，状态"""
+    try:
+      name=li.xpath("./div[@class='des']/text()")[0].extract().strip()
+    except:
+      name="null"
+    try:
+      status=li.xpath("./div[@class='des']/i/text()")[0].extract().strip()
+    except:
+      status="null"
+    return {"name":name,"status":status}
+
+  def fun6(li):
+    """抓取参考单价"""
+    try:
+      price=li.xpath("./div[@class='des']/text()")[0].extract().strip()+"-"+li.xpath("./div[@class='des']/span/text()")[0].extract().strip()+"-"+li.xpath("./div[@class='des']/text()")[1].extract().strip()
+    except:
+      price="null"
+    return {"price":price}
+
+  def fun7(li):
+    """抓取物业类型"""
+    try:
+      for text in li.xpath("./div[@class='des']/text()"):
+        property_type+=" "+text.extract().strip()
+    except:
+      property_type="null"
+    return {"property_type":property_type.strip()}
+
+  def fun8(li):
+    """抓取开发商"""
+    try:
+      developer=li.xpath("./div[@class='des']/a/text()")[0].extract().strip()
+    except:
+      developer="null"
+    return {"developer":developer}
+
+  def fun9(li):
+    """抓取区域位置"""
+    try:
+      area_position=""
+      for a in li.xpath("./div[@class='des']/a"):
+        area_position+=" "+a.xpath("./text()")[0].extract().strip()
+    except:
+      area_position="null"
+    return {"area_position":area_position.strip()}
+
+  def fun10(li):
+    """抓取楼盘地址"""
+    try:
+      address=li.xpath("./div[@class='des']/text()")[0].extract().strip()
+    except:
+      address="null"
+    return {"address":address}
+
+  def fun11(li):
+    """抓取售楼处电话"""
+    try:
+      telephone=""
+      for span in li.xpath("./div[@class='des']/span"):
+        telephone+=" "+span.xpath("./text()")[0].extract().strip()
+    except:
+      telephone="null"
+    return {"telephone":telephone.strip()}
+
+  def fun2(div):
+    lis=div.xpath("./div/ul[@class='list']/li")
+    fields=[]
+    result=HouseItem()
+    for i in range(0,len(lis)):
+      try:
+        rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
+      except:
+        rst="null"
+      fields.append(rst)
+    result["min_down_payment"],result["house_type"],result["opening_date"],result["possession_date"],result["sales_office_add"]=fields
+    return result
+
+  def fun3(div):
+    """
+      building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
+    """
+    lis=divs.xpath("./div/ul[@class='list']/li")
+    fields=[]
+    result=HouseItem()
+    for i in range(0,len(lis)-1):
+      try:
+        rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
+      except:
+        rst="null"
+      fields.append(rst)
+    result["building_types"],result["year_of_property"],result["fitment"],result["plot_ratio"],result["greening_rate"],result["floor_condition"],result["works_programme"],result["managefee"]=fields
+    return result
+      
+
   def parse_house(self,response):
     sel=Selector(response=response)
     self.logger.info("parse_house:%s",response.url)
     item=HouseItem()
+    can_head={u"基本信息":fun1,u"销售信息":fun2,u"小区情况":fun3,u"交通配套":fun4}
     try:
-      divs=sel.xpath("//div[@class='can-container clearfix']")[0].xpath("./div[@class='can-left']")[0].xpath("./div[@class='can-item']")
-      #楼盘名称  状态
-      li_for_name_status=divs[0].xpath("./div/ul[@class='list']/li")[0]
-      item["name"]=li_for_name_status.xpath("./div[@class='des']/text()")[0].extract().strip()
-      item["status"]=li_for_name_status.xpath("./div[@class='des']/i/text()")[0].extract().strip()
-      #price：住宅 3400 元/m²，由三部分组成
-      li_for_price=divs[0].xpath("./div/ul[@class='list']/li")[1]
-      price_part1=li_for_price.xpath("./div[@class='des']/text()")[0].extract().strip()
-      price_part2=li_for_price.xpath("./div[@class='des']/span[@class='can-spe can-big space2']/text()")[0].extract().strip()
-      price_part3="".join(li_for_price.xpath("./div[@class='des']").extract()).split("</span>")[-1].split("<a")[0].strip()
-      item["price"]=price_part1+" "+price_part2+" "+price_part3
-      #property_type
-      item["property_type"]=divs[0].xpath("./div/ul[@class='list']/li")[2].xpath("./div[@class='des']/text()")[0].extract().strip()
-      #developer
-      item["developer"]=divs[0].xpath("./div/ul[@class='list']/li")[3].xpath("./div[@class='des']/a/text()")[0].extract().strip()
-      #area_position
-      item["area_position"]="-".join(divs[0].xpath("./div/ul[@class='list']/li")[4].xpath("./div[@class='des']/a/text()").extract())
-      #address
-      item["address"]=divs[0].xpath("./div/ul[@class='list']/li")[5].xpath("./div[@class='des']/text()")[0].extract().strip()
-      #telephone
-      item["telephone"]=" ".join(divs[0].xpath("./div/ul[@class='list']/li")[6].xpath("./div[@class='des']")[0].xpath("./span").extract())
-      #min_down_payment  house_type  opening_date  possession_date
-      lis=divs[1].xpath("./div/ul[@class='list']/li")
-      fields=[]
-      for i in range(0,len(lis)):
-        fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
-      item["min_down_payment"],item["house_type"],item["opening_date"],item["possession_date"],item["sales_office_add"]=fields
-      #building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
-      lis=divs[2].xpath("./div/ul[@class='list']/li")
-      fields=[]
-      for i in range(0,len(lis)-1):
-        fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
-      item["building_types"],item["year_of_property"],item["fitment"],item["plot_ratio"],item["greening_rate"],item["floor_condition"],item["works_programme"],item["managefee"]=fields
-      item["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
-      #freeway_viaduct
-      item["freeway_viaduct"]=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
-      return item
+      for div in sel.xpath("//div[@class='can-left']/div[@class='can-item']"):
+        rst=can_head.get(div.xpath("./div[@class='can-head']/h4/text()")[0].extract().strip(),"null")(div)
+        # rst=fun1(div.xpath("./div[@class='can-head']/h4/text()")[0].extract().strip())
+        if len(rst)>0: item.update(rst)
     except Exception,e:
       self.logger.error(e)
+
+
+
+
+
+
+
+
+
+
+
+      # divs=sel.xpath("//div[@class='can-container clearfix']")[0].xpath("./div[@class='can-left']")[0].xpath("./div[@class='can-item']")
+      # #楼盘名称  状态
+      # li_for_name_status=divs[0].xpath("./div/ul[@class='list']/li")[0]
+      # item["name"]=li_for_name_status.xpath("./div[@class='des']/text()")[0].extract().strip()
+      # item["status"]=li_for_name_status.xpath("./div[@class='des']/i/text()")[0].extract().strip()
+
+      # #price：住宅 3400 元/m²，由三部分组成
+      # li_for_price=divs[0].xpath("./div/ul[@class='list']/li")[1]
+      # price_part1=li_for_price.xpath("./div[@class='des']/text()")[0].extract().strip()
+      # price_part2=li_for_price.xpath("./div[@class='des']/span[@class='can-spe can-big space2']/text()")[0].extract().strip()
+      # price_part3="".join(li_for_price.xpath("./div[@class='des']").extract()).split("</span>")[-1].split("<a")[0].strip()
+      # item["price"]=price_part1+" "+price_part2+" "+price_part3
+      # #property_type
+      # item["property_type"]=divs[0].xpath("./div/ul[@class='list']/li")[2].xpath("./div[@class='des']/text()")[0].extract().strip()
+      # #developer
+      # item["developer"]=divs[0].xpath("./div/ul[@class='list']/li")[3].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+      # #area_position
+      # item["area_position"]="-".join(divs[0].xpath("./div/ul[@class='list']/li")[4].xpath("./div[@class='des']/a/text()").extract())
+      # #address
+      # item["address"]=divs[0].xpath("./div/ul[@class='list']/li")[5].xpath("./div[@class='des']/text()")[0].extract().strip()
+      # #telephone
+      # item["telephone"]=" ".join(divs[0].xpath("./div/ul[@class='list']/li")[6].xpath("./div[@class='des']")[0].xpath("./span").extract())
+      #min_down_payment  house_type  opening_date  possession_date
+      # lis=divs[1].xpath("./div/ul[@class='list']/li")
+      # fields=[]
+      # for i in range(0,len(lis)):
+      #   fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
+      # item["min_down_payment"],item["house_type"],item["opening_date"],item["possession_date"],item["sales_office_add"]=fields
+      # #building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
+      # lis=divs[2].xpath("./div/ul[@class='list']/li")
+      # fields=[]
+      # for i in range(0,len(lis)-1):
+      #   fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
+      # item["building_types"],item["year_of_property"],item["fitment"],item["plot_ratio"],item["greening_rate"],item["floor_condition"],item["works_programme"],item["managefee"]=fields
+      # item["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+      # #freeway_viaduct
+      # item["freeway_viaduct"]=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
+      # return item
