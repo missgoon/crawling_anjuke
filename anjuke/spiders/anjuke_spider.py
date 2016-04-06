@@ -146,39 +146,52 @@ class AnjukeSpider(CrawlSpider):
 
   def fun2(div):
     lis=div.xpath("./div/ul[@class='list']/li")
-    fields=[]
-    result=HouseItem()
+    result,names=HouseItem(),["min_down_payment","house_type","opening_date","possession_date","sales_office_add","building_types","year_of_property","fitment","plot_ratio","greening_rate","floor_condition","works_programme","managefee"]
     for i in range(0,len(lis)):
       try:
-        rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
+        name=lis[i].xpath("./div[@class='name']/text()")[0].extract().strip()
+        if names.count(name)!=0: 
+          try:
+            rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
+          except:
+            rst="null"
+          result[name.encode("utf-8")]=rst
+        elif name==u"物业管理费":
+          result["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
       except:
-        rst="null"
-      fields.append(rst)
-    result["min_down_payment"],result["house_type"],result["opening_date"],result["possession_date"],result["sales_office_add"]=fields
+        pass
+    #   fields.append(rst)
+    # result["min_down_payment"],result["house_type"],result["opening_date"],result["possession_date"],result["sales_office_add"]=fields
     return result
+    result["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+
+  # def fun3(div):
+  #   """
+  #     building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
+  #   """
+  #   lis=divs.xpath("./div/ul[@class='list']/li")
+  #   fields=[]
+  #   result=HouseItem()
+  #   for i in range(0,len(lis)-1):
+  #     try:
+  #       rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
+  #     except:
+  #       rst="null"
+  #     fields.append(rst)
+  #   result["building_types"],result["year_of_property"],result["fitment"],result["plot_ratio"],result["greening_rate"],result["floor_condition"],result["works_programme"],result["managefee"]=fields
+  #   result["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+  #   return result
 
   def fun3(div):
-    """
-      building_types,year_of_property,fitment,plot_ratio,greening_rate,floor_condition,works_programme,managefee,property_management
-    """
-    lis=divs.xpath("./div/ul[@class='list']/li")
-    fields=[]
     result=HouseItem()
-    for i in range(0,len(lis)-1):
-      try:
-        rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
-      except:
-        rst="null"
-      fields.append(rst)
-    result["building_types"],result["year_of_property"],result["fitment"],result["plot_ratio"],result["greening_rate"],result["floor_condition"],result["works_programme"],result["managefee"]=fields
+    result["freeway_viaduct"]=div.xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
     return result
-      
 
   def parse_house(self,response):
     sel=Selector(response=response)
     self.logger.info("parse_house:%s",response.url)
     item=HouseItem()
-    can_head={u"基本信息":fun1,u"销售信息":fun2,u"小区情况":fun3,u"交通配套":fun4}
+    can_head={u"基本信息":fun1,u"销售信息":fun2,u"小区情况":fun2,u"交通配套":fun3}
     try:
       for div in sel.xpath("//div[@class='can-left']/div[@class='can-item']"):
         rst=can_head.get(div.xpath("./div[@class='can-head']/h4/text()")[0].extract().strip(),"null")(div)
@@ -186,6 +199,8 @@ class AnjukeSpider(CrawlSpider):
         if len(rst)>0: item.update(rst)
     except Exception,e:
       self.logger.error(e)
+    finally:
+      return item
 
 
 
@@ -231,7 +246,7 @@ class AnjukeSpider(CrawlSpider):
       # for i in range(0,len(lis)-1):
       #   fields.append(lis[i].xpath("./div[@class='des']/text()")[0].extract().strip())
       # item["building_types"],item["year_of_property"],item["fitment"],item["plot_ratio"],item["greening_rate"],item["floor_condition"],item["works_programme"],item["managefee"]=fields
-      # item["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+      item["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
       # #freeway_viaduct
       # item["freeway_viaduct"]=divs[3].xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
       # return item
