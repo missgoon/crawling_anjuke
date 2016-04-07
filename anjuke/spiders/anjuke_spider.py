@@ -171,7 +171,7 @@ class AnjukeSpider(CrawlSpider):
     return result
 
   def return_none(self,args):
-    return "null"
+    return "none"
 
   def parse_house(self,response):
     sel=Selector(response=response)
@@ -181,10 +181,11 @@ class AnjukeSpider(CrawlSpider):
     try:
       for div in sel.xpath("//div[@class='can-left']/div[@class='can-item']"):
         rst=can_head.get(div.xpath("./div[@class='can-head']/h4/text()")[0].extract().strip(),self.return_none)(div)
-        if len(rst)>0: item.update(rst)
+        if len(rst)>0 and rst!="none": item.update(rst)
     except Exception,e:
       self.logger.error(e)
     finally:
+      self.logger.info("######get item successfully!!!!",item)
       return item
 
 

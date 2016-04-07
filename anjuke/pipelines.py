@@ -56,4 +56,6 @@ class AnjukeHouseItemPipeline(object):
       if db_item.count()==0:
         item["date"]=DateTime.utcnow()
         self.houses.insert_one(dict(item))
+      else:
+        self.houses.update({"db_id":item["db_id"]},{"$set":dict(item)})
     return item
