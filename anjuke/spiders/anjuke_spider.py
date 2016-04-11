@@ -4,6 +4,7 @@ from scrapy.spiders import CrawlSpider,Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from anjuke.items import *
+import json
 
 class AnjukeSpider(CrawlSpider):
   name="anjuke"
@@ -80,6 +81,7 @@ class AnjukeSpider(CrawlSpider):
         if item_hash!="null": result.update(item_hash)
       except:
         pass
+    self.logger.info("######fun1 successfully!!!"+json.dumps(dict(result)))
     return result 
 
   def fun5(self,li):
@@ -149,25 +151,30 @@ class AnjukeSpider(CrawlSpider):
 
   def fun2(self,div):
     lis=div.xpath("./div/ul[@class='list']/li")
-    result,names=HouseItem(),["min_down_payment","house_type","opening_date","possession_date","sales_office_add","building_types","year_of_property","fitment","plot_ratio","greening_rate","floor_condition","works_programme","managefee"]
+    result,names=HouseItem(),{u"最低首付":"min_down_payment",u"楼盘户型":"house_type",u"开盘时间":"opening_date",u"交房时间":"possession_date",u"售楼处地址":"sales_office_add",u"建筑类型":"building_types",u"产权年限":"year_of_property",u"装修标准":"fitment",u"容积率":"plot_ratio",u"绿化率":"greening_rate",u"楼层状况":"floor_condition",u"工程进度":"works_programme",u"物业管理费":"managefee"}
     for i in range(0,len(lis)):
       try:
         name=lis[i].xpath("./div[@class='name']/text()")[0].extract().strip()
-        if names.count(name)!=0: 
+        if names.has_key(name): 
           try:
             rst=lis[i].xpath("./div[@class='des']/text()")[0].extract().strip()
           except:
             rst="null"
-          result[name.encode("utf-8")]=rst
-        elif name==u"物业管理费":
-          result["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
-      except:
-        pass
+          result[names.get(name)]=rst
+        elif name==u"物业管理公司":
+          try:
+            result["property_management"]=lis[8].xpath("./div[@class='des']/a/text()")[0].extract().strip()
+          except:
+            result["property_management"]="null"
+      except Exception,e:
+        self.logger.error(e)
+    self.logger.info("######fun2 successfully!!!"+json.dumps(dict(result)))
     return result
 
   def fun3(self,div):
     result=HouseItem()
     result["freeway_viaduct"]=div.xpath("./div/ul[@class='list']/li")[0].xpath("./div[@class='des']/text()")[0].extract().strip()
+    self.logger.info("######fun3 successfully!!!"+json.dumps(dict(result)))
     return result
 
   def return_none(self,args):
@@ -185,7 +192,7 @@ class AnjukeSpider(CrawlSpider):
     except Exception,e:
       self.logger.error(e)
     finally:
-      self.logger.info("######get item successfully!!!!",item)
+      self.logger.info("######get item successfully!!!!"+json.dumps(dict(item)))
       return item
 
 

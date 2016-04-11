@@ -5,9 +5,9 @@ import redis
 import multiprocessing  #多进程module
 
 urls=[
-  "http://www.youdaili.net/Daili/http/4313.html",
-  "http://www.youdaili.net/Daili/http/4313_2.html",
-  # "http://www.youdaili.net/Daili/http/4309_3.html",
+  "http://www.youdaili.net/Daili/http/4319.html",
+  "http://www.youdaili.net/Daili/http/4319_2.html",
+  "http://www.youdaili.net/Daili/http/4319_3.html",
 ]
 test_url="http://chaoyang.anjuke.com/"
 
