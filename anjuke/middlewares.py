@@ -17,7 +17,7 @@ class AnjukeHttpProxyMiddleware(object):
       try:
         # response=requests.get("http://chaoyang.anjuke.com/",proxies=proxies)
         self.r.incr("ip_proxies.times")
-        if int(self.r.get("ip_proxies.times"))>10: raise
+        if int(self.r.get("ip_proxies.times"))>3: raise
         # if response.status_code!=200 or int(self.r.get("ip_proxies.times"))>10: raise
         self.r.lpush("ip_proxies",proxy_str)
         flag=False
