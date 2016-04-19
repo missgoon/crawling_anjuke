@@ -4,13 +4,14 @@ import lxml.html
 import redis
 import multiprocessing  #多进程module
 import thread
+import time
 
 # urls=[
 #   "http://www.youdaili.net/Daili/http/4323.html",
 #   "http://www.youdaili.net/Daili/http/4323_2.html",
 #   "http://www.youdaili.net/Daili/http/4323_3.html",
 # ]
-urls=["4323","4323_2","4323_3","4319","4319_2","4319_3","4315","4315","4315","4313","4313","4309","4309","4309","4304","4304","4304","4300","4300","4300","4300","4295","4295","4328","4328_2","4328_3","4328_4"]
+urls=["4323","4323_2","4323_3","4319","4319_2","4319_3","4315","4315","4315","4313","4313","4309","4309","4309","4304","4304","4304","4300","4300","4300","4300","4295","4295","4328","4328_2","4328_3","4328_4","4332","4332_2","4332_3","4332_4","4337","4337_2","4337_3","4337_4","4342","4342_2","4342_3"]
 test_url="http://chaoyang.anjuke.com/"
 
 r = redis.Redis(host="139.129.45.40",port=6379,db=0)
@@ -37,10 +38,16 @@ def run(url):
   elif len(html.xpath("//div[@class='cont_font']/p/text()"))>0:
     for item in html.xpath("//div[@class='cont_font']/p/text()"):
       handle_item(item)
+  r.set("process_cnt",int(r.get("process_cnt"))-1)
 
+r.set("process_cnt",0)
 for url in urls:
-  url="http://www.youdaili.net/Daili/http/"+url+".html"
-  print("ok %s"%url)
-  # thread.start_new_thread(run,(url,))
-  p = multiprocessing.Process(target = run, args = (url,))
-  p.start()
+  while True:
+    if r.get("process_cnt")>=10: time.sleep(5)
+    url="http://www.youdaili.net/Daili/http/"+url+".html"
+    print("ok %s"%url)
+    # thread.start_new_thread(run,(url,))
+    p = multiprocessing.Process(target = run, args = (url,))
+    p.start()
+    r.incr("process_cnt")
+    break
