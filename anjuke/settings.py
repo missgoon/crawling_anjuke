@@ -90,6 +90,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+#将输出的日志打印到日志文件 保存下来
 import logging
 from scrapy.utils.log import configure_logging
 configure_logging(install_root_handler=False)

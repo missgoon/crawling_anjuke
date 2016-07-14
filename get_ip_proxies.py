@@ -5,14 +5,17 @@ import redis
 import multiprocessing  #多进程module
 import thread
 import time
-
+"""
+  通过提供urls 来抓取www.youdaili.net的代理ip，对抓取到的ip数据进行验证  
+  确定可用后 保存到redis数据库中 为anjuke_spider提供代理ip池
+"""
 # urls=[
 #   "http://www.youdaili.net/Daili/http/4323.html",
 #   "http://www.youdaili.net/Daili/http/4323_2.html",
 #   "http://www.youdaili.net/Daili/http/4323_3.html",
 # ]
 urls=["4323","4323_2","4323_3","4319","4319_2","4319_3","4315","4315","4315","4313","4313","4309","4309","4309","4304","4304","4304","4300","4300","4300","4300","4295","4295","4328","4328_2","4328_3","4328_4","4332","4332_2","4332_3","4332_4","4337","4337_2","4337_3","4337_4","4342","4342_2","4342_3"]
-test_url="http://chaoyang.anjuke.com/"#"http://news.39.net/"
+test_url="http://chaoyang.anjuke.com/"#"http://news.39.net/"   #对抓取的ip通过这个网站进行测试 是否可用
 
 r = redis.Redis(host="139.129.45.40",port=6379,db=0)
 r.flushall()
@@ -43,7 +46,7 @@ def run(url):
 r.set("process_cnt",0)
 for url in urls:
   while True:
-    if r.get("process_cnt")>=10: time.sleep(5)
+    if r.get("process_cnt")>=10: time.sleep(5)   #同时使用10个进程 进行抓取 并对这10个进程进行管理
     url="http://www.youdaili.net/Daili/http/"+url+".html"
     print("ok %s"%url)
     # thread.start_new_thread(run,(url,))

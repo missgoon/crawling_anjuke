@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 import os
 '''
-   将log.txt文件合并到all_log文件，并删除log.txt文件
+   将log.txt文件合并到all_log文件，并删除log.txt文件  用于保留所有的log日志
 '''
 with open("all_log","ab") as w:
   with open("log.txt","rb") as r:

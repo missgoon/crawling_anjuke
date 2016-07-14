@@ -5,6 +5,9 @@ import logging
 import re
 
 class AnjukeHttpProxyMiddleware(object):
+  """
+    使用已经准备好的代理ip
+  """
   def __init__(self):
     self.r = redis.Redis(host="139.129.45.40",port=6379,db=0)
 

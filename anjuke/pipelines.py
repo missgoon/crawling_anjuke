@@ -11,6 +11,9 @@ import logging
 import re
 
 class AnjukePipeline(object):
+  """
+    将抓取到的数据保存的all.json文件
+  """
   def __init__(self):
     self.all_file=open("/root/anjuke/all.json","wb")
 
@@ -24,6 +27,9 @@ class AnjukePipeline(object):
     self.all_file.close()
 
 class AnjukeCityItemPipeline(object):
+  """
+    将抓取到的数据保存到mongodb数据库
+  """
   def __init__(self):
     client = MongoClient("139.129.45.40",27017)
     db=client.anjuke

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from pymongo import MongoClient
 
+#对已爬取的数据 进行统计
+
 client=MongoClient("139.129.45.40",27017)
 db=client.anjuke
 houses=db.houses
